@@ -32,10 +32,11 @@ def signal_handler(sig, frame):
 signal.signal(signal.SIGINT, signal_handler)
 
 
+print('connecting to flipper...')
 try:
     flipper = PyFlipper(com=args.dev)
-except err:
-    print(f'unable to open serial port {args.dev}')
+except Exception as e:
+    print(f'unable to open serial port {args.dev}: {e}')
     exit(1)
 
 
@@ -44,12 +45,7 @@ def rm(filename):
         flipper.storage.remove(file=filename)
     except:
         print("no file to remove")
-    print("starting write")
-    flipper.storage.write.start(filename)
-    print("sending file...")
-    flipper.storage.write.send(text)
-    flipper.storage.write.stop()
-    print("file sent!")
+
 
 def cp(computer_path, flipper_path, replace=True):
     # first remove file if already exists
@@ -60,17 +56,11 @@ def cp(computer_path, flipper_path, replace=True):
            pass # no file to remove
 
     try:
-        with open(computer_path, "r") as fp:
-            contents = fp.read()
-    except:
-        print("could not open source file, not copying")
-        return
+        flipper.storage.copy(src=computer_path, dest=flipper_path)
+    except Exception as e:
+        print(e)
+        print("not copying")
 
-    # then write to file
-    flipper.storage.write.start(flipper_path)
-    flipper.storage.write.send(contents)
-    flipper.storage.write.stop()
-    print("file copied")
 
 def ls(cur_dir, fzargs):
     directory = cur_dir
@@ -81,6 +71,7 @@ def ls(cur_dir, fzargs):
             directory += '/' + fzargs[0]
     print('\t'+'\n\t'.join(flipper.storage.list(path=directory)['dirs']))
     print()
+
 
 def chdir(cur_dir, fzargs):
     if fzargs[0] == '..': # one dir up
