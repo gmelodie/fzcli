@@ -1,2 +1,1 @@
-pyserial==3.5
-websocket-client==1.3.3
+pyflipper

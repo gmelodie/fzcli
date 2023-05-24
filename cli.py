@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from pyflipper import PyFlipper
+from pyflipper.pyflipper import PyFlipper
 import argparse
 import textwrap
 import signal
